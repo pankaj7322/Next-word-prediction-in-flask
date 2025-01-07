@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Word Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 18px;
+        }
+
+        ul#predictions {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul#predictions li {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        ul#predictions li:hover {
+            background-color: #e9e9e9;
+        }
+
+        .message {
+            text-align: center;
+            color: #ff4d4d;
+            font-size: 16px;
+        }
+
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#text').on('input', function() {
+                var inputText = $(this).val();
+                
+                if (inputText.length > 0) {
+                    // If there is text, send the request and show predictions
+                    $.ajax({
+                        url: '/predict',
+                        type: 'POST',
+                        data: { text: inputText },
+                        success: function(response) {
+                            // Clear previous predictions
+                            $('#predictions').empty();
+                            
+                            // If predictions exist, show them
+                            if (response.predictions && response.predictions.length > 0) {
+                                response.predictions.forEach(function(word) {
+                                    $('#predictions').append('<li>' + word + '</li>');
+                                });
+                            } else {
+                                $('#predictions').append('<li class="message">No prediction available.</li>');
+                            }
+                        }
+                    });
+                } else {
+                    // If input is empty, clear predictions
+                    $('#predictions').empty();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Next Word Prediction App</h1>
+    
+    <div class="container">
+        <label for="text">Enter text:</label>
+        <input type="text" id="text" name="text" placeholder="Start typing..." required>
+
+        <h3>Next word predictions:</h3>
+        <ul id="predictions"></ul>
+    </div>
+</body>
+</html>
